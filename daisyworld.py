@@ -13,11 +13,11 @@ def Daisyworld(Total_Time):
 
 
     # Black Daisy paramters
-    blackDaisy_albedio = 0.15 # albedo of black daisies, unitless
+    blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
     blackDaisy_inital_coverage = 0.25 #initial fractional coverage of black daisies
 
     # White Daisy paramters
-    whiteDaisy_albedio = 0.85 # albedo of black daisies, unitless
+    whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
     whiteDaisy_inital_coverage = 0.25 #initial fractional coverage of black daisies
 
 
@@ -33,22 +33,19 @@ def Daisyworld(Total_Time):
     blackDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of Black daisies
     whiteDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of White daisies
     T = numpy.zeros(len(time)) # surface temperature
-
-
-########################## continue from here
-
-
-
-
-
-
-
-
-
-
+    area_daisies = numpy.zeros(len(time))
 
     # Set the initial conditions
-    area_daisies[0] = Initial_Daisies
+    area_daisies[0] = blackDaisy_inital_coverage + whiteDaisy_inital_coverage
+    if area_daisies[0] > 1:
+        print "blackDaisy_inital_coverage + whiteDaisy_inital_coverage was larger than 1"
+        exit()
+
+
+
+############################### continue
+
+
 
     # Calculate the original albedo based on the initial condition for daisies
     albedo = area_daisies[0] * albedo_daisies + (1-area_daisies[0]) * albedo_soil
