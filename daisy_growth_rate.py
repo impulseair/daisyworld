@@ -50,6 +50,9 @@ def daisy_growth_rate(lzgp=15, uzgp=45, temp=30):
 
     growth_rate = a*temp**2 + b*temp + c #adapted from parabola general equation y = ax^2 + bx + c
 
+    if growth_rate < -1:
+        growth_rate = -1
+
     return growth_rate
 
 daisy_growth_rate()
