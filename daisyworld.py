@@ -1,4 +1,6 @@
 from daisy_growth_rate import daisy_growth_rate
+from avg_albedo import *
+from conversions import *
 import numpy
 import matplotlib.pyplot as pyplot
 #% matplotlib inline
@@ -33,22 +35,29 @@ def Daisyworld(Total_Time):
     blackDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of Black daisies
     whiteDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of White daisies
     T = numpy.zeros(len(time)) # surface temperature
-    area_daisies = numpy.zeros(len(time))
+    area_daisies = numpy.zeros(len(time)) #fractional coverage of Black and White daisies
+    area_soil = numpy.zeros(len(time)) #fractional coverage of soil
+    avg_albedo_daisiesArray = numpy.zeros(len(time)) #Array of average albedo of Black and White daisies combined
 
     # Set the initial conditions
     area_daisies[0] = blackDaisy_inital_coverage + whiteDaisy_inital_coverage
+    area_soil[0] = 1 - area_daisies[0]
+    # check the area of daisies is not above 100%
     if area_daisies[0] > 1:
         print "blackDaisy_inital_coverage + whiteDaisy_inital_coverage was larger than 1"
         exit()
 
-
-
-############################### continue
-
-
-
     # Calculate the original albedo based on the initial condition for daisies
-    albedo = area_daisies[0] * albedo_daisies + (1-area_daisies[0]) * albedo_soil
+    #old: albedo = area_daisies[0] * albedo_daisies + (1-area_daisies[0]) * albedo_soil
+    albedo = avg_albedo(blackDaisy_inital_coverage, blackDaisy_albedio, whiteDaisy_inital_coverage, whiteDaisy_albedio, area_soil[0], albedo_soil)
+
+######################continue
+
+
+
+
+
+
 
     # Calculate the original temperature based on the original albedo
     T[0] = ((S*(1-albedo))/sigma)**0.25
