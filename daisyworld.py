@@ -84,6 +84,7 @@ def Daisyworld(Total_Time):
 
         ############# CONSTRIAINING FACTORS
         ###########
+        ###
 
         ##### Check if the daisy growth exceeds the available soil area - IS THIS NEEDED AS THEY ARE GROWTH RATES!!!
         if (whiteDaisy_area_change + blackDaisy_area_change > 1):
