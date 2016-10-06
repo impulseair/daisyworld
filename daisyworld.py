@@ -81,8 +81,21 @@ def Daisyworld(Total_Time):
         print "whiteDaisy_area_change: " + str(whiteDaisy_area_change)
         print "blackDaisy_area_change: " + str(blackDaisy_area_change)
         print "area_daisies[i-1]:" + str(area_daisies[i-1])
-        exit()
+
         ############# CONSTRIAINING FACTORS
+        ###########
+
+        ##### Check if the daisy growth exceeds the available soil area - IS THIS NEEDED AS THEY ARE GROWTH RATES!!!
+        if (whiteDaisy_area_change + blackDaisy_area_change > 1):
+            print "Need to Limit to available area (Cross that bridge when we get to it)"
+            ##### Limit Daisy Growth to fill available area
+            ##### Ratio of growth rates?
+
+        ##### Increase the daisy area and daisy coverage by the required value
+
+
+
+
 ######################continue
 
 
