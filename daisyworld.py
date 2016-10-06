@@ -16,11 +16,11 @@ def Daisyworld(Total_Time):
 
     # Black Daisy paramters
     blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
-    blackDaisy_inital_coverage = 0.25 #initial fractional coverage of black daisies
+    blackDaisy_inital_coverage = 0.15 #initial fractional coverage of black daisies
 
     # White Daisy paramters
     whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
-    whiteDaisy_inital_coverage = 0.25 #initial fractional coverage of black daisies
+    whiteDaisy_inital_coverage = 0.6 #initial fractional coverage of black daisies
 
 
     # Planet parameters
@@ -42,6 +42,10 @@ def Daisyworld(Total_Time):
     # Set the initial conditions
     area_daisies[0] = blackDaisy_inital_coverage + whiteDaisy_inital_coverage
     area_soil[0] = 1 - area_daisies[0]
+    whiteDaisy_coverage[0] = whiteDaisy_inital_coverage
+    blackDaisy_coverage[0] = blackDaisy_inital_coverage
+
+
     # check the area of daisies is not above 100%
     if area_daisies[0] > 1:
         print "blackDaisy_inital_coverage + whiteDaisy_inital_coverage was larger than 1"
@@ -51,16 +55,9 @@ def Daisyworld(Total_Time):
     #old: albedo = area_daisies[0] * albedo_daisies + (1-area_daisies[0]) * albedo_soil
     albedo = avg_albedo(blackDaisy_inital_coverage, blackDaisy_albedio, whiteDaisy_inital_coverage, whiteDaisy_albedio, area_soil[0], albedo_soil)
 
-######################continue
-
-
-
-
-
-
-
     # Calculate the original temperature based on the original albedo
     T[0] = ((S*(1-albedo))/sigma)**0.25
+    print "initial temp:" + str(k_to_c(T[0]))
 
     # Loop over time steps - each time calculate albedo, growth rate, temperature, area_change and area
     for i in range(1,len(time)):
@@ -69,14 +66,35 @@ def Daisyworld(Total_Time):
         #old equation: growth_rate = 1 - 0.003265*(295.5-T[i-1])**2
 
         # New equation incorperates death_rate at either end of temperature scale
-        growth_rate = daisy_growth_rate(288, 318, T[i-1])
-        print growth_rate
+        whiteDaisy_growth_rate = daisy_growth_rate(c_to_k(15), c_to_k(45), T[i-1])
+        blackDaisy_growth_rate = daisy_growth_rate(c_to_k(-5), c_to_k(25), T[i-1])
+        print "whiteDaisy_growth_rate:" + str(whiteDaisy_growth_rate)
+        print "blackDaisy_growth_rate:" + str(blackDaisy_growth_rate)
 
 
         # Calculate change in area - based on the area from the previous time step
         # old: area_change = area_daisies[i-1] * ((1-area_daisies[i-1]) * growth_rate - death_rate)
+        #removed death_rate as it is incorperated in growth_rate
+        ############ THIS IS UNINHIBITED AREA CHANGE
+        whiteDaisy_area_change = whiteDaisy_coverage[i-1] * whiteDaisy_growth_rate
+        blackDaisy_area_change = blackDaisy_coverage[i-1] * blackDaisy_growth_rate
+        print "whiteDaisy_area_change: " + str(whiteDaisy_area_change)
+        print "blackDaisy_area_change: " + str(blackDaisy_area_change)
+        print "area_daisies[i-1]:" + str(area_daisies[i-1])
+        exit()
+        ############# CONSTRIAINING FACTORS
+######################continue
 
-        #new: removed death_rate as it is incorperated in growth_rate
+
+
+
+
+
+
+
+
+
+
 
 
         # Finally, add the area change (which can be positve or negative) to the prior area
