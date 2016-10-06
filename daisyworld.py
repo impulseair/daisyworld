@@ -16,12 +16,15 @@ def Daisyworld(Total_Time):
 
     # Black Daisy paramters
     blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
-    blackDaisy_inital_coverage = 0.15 #initial fractional coverage of black daisies
+    blackDaisy_inital_coverage = 0.4 #initial fractional coverage of black daisies
+    blackDaisy_minimumTemp = c_to_k(-5) # minimum temperature daisy will survive
+    blackDaisy_maximumTemp = c_to_k(25) # minimum temperature daisy will survive
 
     # White Daisy paramters
     whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
     whiteDaisy_inital_coverage = 0.6 #initial fractional coverage of black daisies
-
+    whiteDaisy_minimumTemp = c_to_k(5) # minimum temperature daisy will survive
+    whiteDaisy_maximumTemp = c_to_k(45) # maximum temperature daisy will survive
 
     # Planet parameters
     albedo_soil = 0.15      # albedo of soil, unitless
@@ -66,8 +69,8 @@ def Daisyworld(Total_Time):
         #old equation: growth_rate = 1 - 0.003265*(295.5-T[i-1])**2
 
         # New equation incorperates death_rate at either end of temperature scale
-        whiteDaisy_growth_rate = daisy_growth_rate(c_to_k(15), c_to_k(45), T[i-1])
-        blackDaisy_growth_rate = daisy_growth_rate(c_to_k(-5), c_to_k(25), T[i-1])
+        whiteDaisy_growth_rate = daisy_growth_rate(whiteDaisy_minimumTemp, whiteDaisy_maximumTemp, T[i-1])
+        blackDaisy_growth_rate = daisy_growth_rate(blackDaisy_minimumTemp, blackDaisy_maximumTemp, T[i-1])
         print "whiteDaisy_growth_rate:" + str(whiteDaisy_growth_rate)
         print "blackDaisy_growth_rate:" + str(blackDaisy_growth_rate)
 
@@ -76,6 +79,10 @@ def Daisyworld(Total_Time):
         # old: area_change = area_daisies[i-1] * ((1-area_daisies[i-1]) * growth_rate - death_rate)
         #removed death_rate as it is incorperated in growth_rate
         ############ THIS IS UNINHIBITED AREA CHANGE
+
+        ratio_whiteblackGrowth = whiteDaisy_growth_rate / blackDaisy_growth_rate
+        print "ratio_whiteblackGrowth:" + str(ratio_whiteblackGrowth)
+
         whiteDaisy_area_change = whiteDaisy_coverage[i-1] * whiteDaisy_growth_rate
         blackDaisy_area_change = blackDaisy_coverage[i-1] * blackDaisy_growth_rate
         print "whiteDaisy_area_change: " + str(whiteDaisy_area_change)
@@ -93,7 +100,7 @@ def Daisyworld(Total_Time):
             ##### Ratio of growth rates?
 
         ##### Increase the daisy area and daisy coverage by the required value
-
+        exit()
 
 
 
