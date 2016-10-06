@@ -16,7 +16,7 @@ def Daisyworld(Total_Time):
 
     # Black Daisy paramters
     blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
-    blackDaisy_inital_coverage = 0.4 #initial fractional coverage of black daisies
+    blackDaisy_inital_coverage = 0.05 #initial fractional coverage of black daisies
     blackDaisy_minimumTemp = c_to_k(-5) # minimum temperature daisy will survive
     blackDaisy_maximumTemp = c_to_k(25) # minimum temperature daisy will survive
 
@@ -65,6 +65,11 @@ def Daisyworld(Total_Time):
     # Loop over time steps - each time calculate albedo, growth rate, temperature, area_change and area
     for i in range(1,len(time)):
 
+
+
+
+
+
         # Define growth_rate using equation
         #old equation: growth_rate = 1 - 0.003265*(295.5-T[i-1])**2
 
@@ -80,31 +85,23 @@ def Daisyworld(Total_Time):
         #removed death_rate as it is incorperated in growth_rate
         ############ THIS IS UNINHIBITED AREA CHANGE
 
-        ratio_whiteblackGrowth = whiteDaisy_growth_rate / blackDaisy_growth_rate
-        print "ratio_whiteblackGrowth:" + str(ratio_whiteblackGrowth)
 
-        whiteDaisy_area_change = whiteDaisy_coverage[i-1] * whiteDaisy_growth_rate
-        blackDaisy_area_change = blackDaisy_coverage[i-1] * blackDaisy_growth_rate
-        print "whiteDaisy_area_change: " + str(whiteDaisy_area_change)
-        print "blackDaisy_area_change: " + str(blackDaisy_area_change)
-        print "area_daisies[i-1]:" + str(area_daisies[i-1])
+        ## Area available for plant to grow is the soil coverage
+        area_available = area_soil[i-1]
 
-        ############# CONSTRIAINING FACTORS
-        ###########
-        ###
+        #### work out if growth rates need scaling
+        if (whiteDaisy_growth_rate + blackDaisy_growth_rate > 1): # i.e. if the daisies each want to grow more than the available area, scale their growth rate based on the ratio
+            scale_factor = 1 / (whiteDaisy_growth_rate + blackDaisy_growth_rate)
+            whiteDaisy_growth_rate = whiteDaisy_growth_rate * scale_factor
+            blackDaisy_growth_rate = blackDaisy_growth_rate * scale_factor
 
-        ##### Check if the daisy growth exceeds the available soil area - IS THIS NEEDED AS THEY ARE GROWTH RATES!!!
-        if (whiteDaisy_area_change + blackDaisy_area_change > 1):
-            print "Need to Limit to available area (Cross that bridge when we get to it)"
-            ##### Limit Daisy Growth to fill available area
-            ##### Ratio of growth rates?
-
-        ##### Increase the daisy area and daisy coverage by the required value
         exit()
 
 
 
-######################continue
+###############################continue
+
+
 
 
 
