@@ -10,7 +10,7 @@ import matplotlib.pyplot as pyplot
 def Daisyworld(Total_Time):
 
     # Constants
-    S = 917                 # solar energy, in W/m2
+    S = 500                 # solar energy, in W/m2
     sigma = 5.67e-8         # Stefan-Boltzmann constant, in W/m2/K4
 
 
@@ -22,7 +22,7 @@ def Daisyworld(Total_Time):
 
     # White Daisy paramters
     whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
-    whiteDaisy_inital_coverage = 0.6 #initial fractional coverage of black daisies
+    whiteDaisy_inital_coverage = 0.1 #initial fractional coverage of black daisies
     whiteDaisy_minimumTemp = c_to_k(5) # minimum temperature daisy will survive
     whiteDaisy_maximumTemp = c_to_k(45) # maximum temperature daisy will survive
 
@@ -60,7 +60,7 @@ def Daisyworld(Total_Time):
 
     # Calculate the original temperature based on the original albedo
     T[0] = ((S*(1-albedo))/sigma)**0.25
-    print "initial temp:" + str(k_to_c(T[0]))
+
 
     # Loop over time steps - each time calculate albedo, growth rate, temperature, area_change and area
     for i in range(1,len(time)):
@@ -76,53 +76,31 @@ def Daisyworld(Total_Time):
         # New equation incorperates death_rate at either end of temperature scale
         whiteDaisy_growth_rate = daisy_growth_rate(whiteDaisy_minimumTemp, whiteDaisy_maximumTemp, T[i-1])
         blackDaisy_growth_rate = daisy_growth_rate(blackDaisy_minimumTemp, blackDaisy_maximumTemp, T[i-1])
-        print "whiteDaisy_growth_rate:" + str(whiteDaisy_growth_rate)
-        print "blackDaisy_growth_rate:" + str(blackDaisy_growth_rate)
 
 
-        # Calculate change in area - based on the area from the previous time step
-        # old: area_change = area_daisies[i-1] * ((1-area_daisies[i-1]) * growth_rate - death_rate)
-        #removed death_rate as it is incorperated in growth_rate
-        ############ THIS IS UNINHIBITED AREA CHANGE
 
-
-        ## Area available for plant to grow is the soil coverage
-        area_available = area_soil[i-1]
-
-        #### work out if growth rates need scaling
+        #### work out if growth rates need scaling - so the daisies can share the available space.
         if (whiteDaisy_growth_rate + blackDaisy_growth_rate > 1): # i.e. if the daisies each want to grow more than the available area, scale their growth rate based on the ratio
             scale_factor = 1 / (whiteDaisy_growth_rate + blackDaisy_growth_rate)
             whiteDaisy_growth_rate = whiteDaisy_growth_rate * scale_factor
             blackDaisy_growth_rate = blackDaisy_growth_rate * scale_factor
 
-        exit()
+
+        ### Work out new daisy coverage
+        whiteDaisy_coverage[i] = whiteDaisy_coverage[i-1] + (whiteDaisy_coverage[i-1] * whiteDaisy_growth_rate)
+        blackDaisy_coverage[i] = blackDaisy_coverage[i-1] + (blackDaisy_coverage[i-1] * blackDaisy_growth_rate)
 
 
-
-###############################continue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # Finally, add the area change (which can be positve or negative) to the prior area
-        area_daisies[i] = area_daisies[i-1] + area_change
-
-        # Define the planetary albedo based on the new coverage of daisies just calculated
-        albedo = area_daisies[i] * albedo_daisies + (1-area_daisies[i]) * albedo_soil
-
-        # Calculate the temperature using the albedo calculated above
+        ### Update Output variables
+        area_daisies[i] = blackDaisy_coverage[i] + whiteDaisy_coverage[i]
+        area_soil[i] = 1 - area_daisies[i]
+        albedo = avg_albedo(blackDaisy_inital_coverage, blackDaisy_albedio, whiteDaisy_inital_coverage, whiteDaisy_albedio, area_soil[i], albedo_soil)
         T[i] = ((S*(1-albedo))/sigma)**0.25
 
-    return time,area_daisies,T
-print Daisyworld(100)
+
+    return time,k_to_c(T),area_daisies,area_soil,whiteDaisy_coverage, blackDaisy_coverage,albedo
+a = Daisyworld(100)
+pyplot.plot(a[0],a[1])
+pyplot.plot(a[0],a[4])
+pyplot.plot(a[0],a[5])
+pyplot.show()
