@@ -31,7 +31,7 @@ def Daisyworld(Total_Time, *plots):
 
     # Black Daisy paramters
     blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
-    blackDaisy_inital_coverage = 0.05 #initial fractional coverage of black daisies
+    blackDaisy_inital_coverage = 0.2 #initial fractional coverage of black daisies
     blackDaisy_minimumTemp = c_to_k(-5) # minimum temperature daisy will survive
     blackDaisy_maximumTemp = c_to_k(25) # minimum temperature daisy will survive
     blackDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of Black daisies
@@ -39,7 +39,7 @@ def Daisyworld(Total_Time, *plots):
 
     # White Daisy paramters
     whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
-    whiteDaisy_inital_coverage = 0.1 #initial fractional coverage of black daisies
+    whiteDaisy_inital_coverage = 0.7 #initial fractional coverage of black daisies
     whiteDaisy_minimumTemp = c_to_k(5) # minimum temperature daisy will survive
     whiteDaisy_maximumTemp = c_to_k(45) # maximum temperature daisy will survive
     whiteDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of White daisies
@@ -50,7 +50,7 @@ def Daisyworld(Total_Time, *plots):
 
 
     ########################## Planet parameters
-    S = 700                 # solar energy, in W/m2
+    S = 1000                # solar energy, in W/m2
     albedo_soil = 0.15      # albedo of soil, unitless
     area_soil = numpy.zeros(len(time)) #fractional coverage of soil
     T = numpy.zeros(len(time)) # surface temperature
@@ -111,9 +111,17 @@ def Daisyworld(Total_Time, *plots):
         if (total_daisy_coverage_test > area_soil[i-1]):
             ### the daisies will outgrow the available area_soil
             ### Scale the growth to fit
-            if debug: print "daisy exceeds soil - scaling"
-            scale_factor = 1 / (total_daisy_coverage_test / area_soil[i-1])
 
+            if debug: print "daisy exceeds soil - scaling"
+            if debug: print "total_daisy_coverage_test: " + str(total_daisy_coverage_test)
+            if debug: print "area_soil " + str(area_soil[i-1])
+
+            #
+            if (area_soil[i-1]>0):
+                scale_factor = 1 / (total_daisy_coverage_test / area_soil[i-1])
+            else:
+                sacle_factor = 0
+            if debug: print "scale_factor " + str(scale_factor)
             ### new growth rates
             whiteDaisy_growth_rate = whiteDaisy_growth_rate * scale_factor
             blackDaisy_growth_rate = blackDaisy_growth_rate * scale_factor
@@ -148,9 +156,14 @@ def Daisyworld(Total_Time, *plots):
         area_soil[i] = 1 - area_daisies[i]
         albedo[i] = avg_albedo(blackDaisy_coverage[i], blackDaisy_albedio, whiteDaisy_coverage[i], whiteDaisy_albedio, area_soil[i], albedo_soil)
         T[i] = ((S*(1-albedo[i-1]))/sigma)**0.25
+        if debug: print "Temp: " + str(k_to_c(T[i]))
         ##########################
 
-
+    ##########################
+    ########################## These are plots which can be turned on and off by adding them to the function call for daisy world
+    ########################## Eg: To turn on the temperature plot: Daisyworld(100, 1)
+    ########################## Eg: To turn on temperature and albedo:  Daisyworld(100, 1, 6)
+    ##########################
     if (1 in plots): pyplot.plot(time,k_to_c(T),label="Temp: DegC")
     if (2 in plots): pyplot.plot(time,area_daisies,label="Total Area Daisies: Fraction")
     if (3 in plots): pyplot.plot(time,area_soil,label="Total Area Soil: Fraction")
@@ -159,9 +172,16 @@ def Daisyworld(Total_Time, *plots):
     if (6 in plots): pyplot.plot(time,albedo,label="Planet Albedo")
     if (7 in plots): pyplot.plot(time,whiteDaisy_growth_rate,label="White Daisy Growth Rate: Fraction") # fix
     if (8 in plots): pyplot.plot(time,blackDaisy_growth_rate,label="Black Daisy Growth Rate: Fraction") # fix
-
-    if plots: pyplot.legend(loc='upper left', frameon=False)
+    # Plot Properties
+    if plots: pyplot.legend(loc='upper right')
     if plots: pyplot.show()
+    ##########################
+
+
+
 
     return time,k_to_c(T),area_daisies,area_soil,whiteDaisy_coverage, blackDaisy_coverage,albedo, whiteDaisy_growth_rate, blackDaisy_growth_rate
-a = Daisyworld(10,1,4,5)
+
+
+
+a = Daisyworld(100,1,4,5)
