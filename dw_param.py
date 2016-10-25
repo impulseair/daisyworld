@@ -9,7 +9,7 @@ import matplotlib.pyplot as pyplot
 ##########################
 
 
-def Daisyworld(Total_Time, solarflux, *plots):
+def Daisyworld_param(Total_Time, planet_soil=0.15, solar_flux=800, blackDaisy_albedo=0.05, blackDaisy_inital_coverage=0.2, blackDaisy_minimumTemp=268.15, blackDaisy_maximumTemp=298.15, whiteDaisy_albedo = 0.8, whiteDaisy_inital_coverage=0.7, whiteDaisy_minimumTemp=278.15, whiteDaisy_maximumTemp=318.15):
 
     debug = 0
     if debug: print "############################################################################## Daisyworld"
@@ -30,19 +30,19 @@ def Daisyworld(Total_Time, solarflux, *plots):
     avg_albedo_daisiesArray = numpy.zeros(len(time)) #Array of average albedo of Black and White daisies combined
 
     # Black Daisy paramters
-    blackDaisy_albedio = 0.05 # albedo of black daisies, unitless
-    blackDaisy_inital_coverage = 0.45 #initial fractional coverage of black daisies
-    blackDaisy_minimumTemp = c_to_k(-5) # minimum temperature daisy will survive
-    blackDaisy_maximumTemp = c_to_k(25) # maximum temperature daisy will survive
+    blackDaisy_albedio = blackDaisy_albedo # albedo of black daisies, unitless
+    blackDaisy_inital_coverage = blackDaisy_inital_coverage #initial fractional coverage of black daisies
+    blackDaisy_minimumTemp = c_to_k(blackDaisy_minimumTemp) # minimum temperature daisy will survive
+    blackDaisy_maximumTemp = c_to_k(blackDaisy_maximumTemp) # maximum temperature daisy will survive
     blackDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of Black daisies
     blackDaisy_growth_rate_array = numpy.zeros(len(time))
     blackDaisy_coverage_array = numpy.zeros(len(time)) # fractional coverage of Black daisies - used for graphing
 
     # White Daisy paramters
-    whiteDaisy_albedio = 0.8 # albedo of black daisies, unitless
-    whiteDaisy_inital_coverage = 0.45 #initial fractional coverage of black daisies
-    whiteDaisy_minimumTemp = c_to_k(20) # minimum temperature daisy will survive
-    whiteDaisy_maximumTemp = c_to_k(45) # maximum temperature daisy will survive
+    whiteDaisy_albedio = whiteDaisy_albedo # albedo of black daisies, unitless
+    whiteDaisy_inital_coverage = whiteDaisy_inital_coverage #initial fractional coverage of black daisies
+    whiteDaisy_minimumTemp = c_to_k(whiteDaisy_minimumTemp) # minimum temperature daisy will survive
+    whiteDaisy_maximumTemp = c_to_k(whiteDaisy_maximumTemp) # maximum temperature daisy will survive
     whiteDaisy_coverage = numpy.zeros(len(time)) # fractional coverage of White daisies
     whiteDaisy_growth_rate_array = numpy.zeros(len(time))
     whiteDaisy_coverage_array = numpy.zeros(len(time)) # fractional coverage of White daisies - used for grpahing
@@ -52,8 +52,8 @@ def Daisyworld(Total_Time, solarflux, *plots):
 
 
     ########################## Planet parameters
-    S = 484              # solar energy, in W/m2
-    albedo_soil = 0.25      # albedo of soil, unitless
+    S = solar_flux              # solar energy, in W/m2
+    albedo_soil = planet_soil      # albedo of soil, unitless
     area_soil = numpy.zeros(len(time)) #fractional coverage of soil
     T = numpy.zeros(len(time)) # surface temperature
     albedo = numpy.zeros(len(time)) # planet albedo
@@ -172,23 +172,7 @@ def Daisyworld(Total_Time, solarflux, *plots):
     blackDaisy_coverage_array = blackDaisy_coverage * 100
 
 
-    ##########################
-    ########################## These are plots which can be turned on and off by adding them to the function call for daisy world
-    ########################## Eg: To turn on the temperature plot: Daisyworld(100, 1)
-    ########################## Eg: To turn on temperature and albedo:  Daisyworld(100, 1, 6)
-    ##########################
-    if (1 in plots): pyplot.plot(time,k_to_c(T),label="Temp: DegC")
-    if (2 in plots): pyplot.plot(time,area_daisies,label="Total Area Daisies: Fraction")
-    if (3 in plots): pyplot.plot(time,area_soil,label="Total Area Soil: Fraction")
-    if (4 in plots): pyplot.plot(time,whiteDaisy_coverage_array,label="White Daisy Coverage: Fraction")
-    if (5 in plots): pyplot.plot(time,blackDaisy_coverage_array,label="Black Daisy Coverage: Fraction")
-    if (6 in plots): pyplot.plot(time,albedo,label="Planet Albedo")
-    if (7 in plots): pyplot.plot(time,whiteDaisy_growth_rate_array,label="White Daisy Growth Rate: Fraction") # fix
-    if (8 in plots): pyplot.plot(time,blackDaisy_growth_rate_array,label="Black Daisy Growth Rate: Fraction") # fix
-    # Plot Properties
-    if plots: pyplot.legend(bbox_to_anchor=(0., 1., 1., .102), loc=3,
-           ncol=2, mode="expand", borderaxespad=0.)
-    if plots: pyplot.show()
+
     ##########################
 
 
@@ -197,5 +181,8 @@ def Daisyworld(Total_Time, solarflux, *plots):
     return time,k_to_c(T),area_daisies,area_soil,whiteDaisy_coverage_array, blackDaisy_coverage_array,albedo, whiteDaisy_growth_rate, blackDaisy_growth_rate
 
 
+acc = 0
+for s in range(1,1000):
+    a = Daisyworld_param(200, 0.25, s, 0.05, 0.45, -5.0, 25.0, 0.8, 0.45, 20, 45)
 
-a = Daisyworld(200,500,1,4,5)
+    print "Solar Flux:," + str(s) + ",Temp:," + str(a[1][199]) + ",WD:," + str(a[4][199]) + ",BD:," + str(a[5][199])
